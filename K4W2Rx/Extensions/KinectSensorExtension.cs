@@ -6,13 +6,37 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reactive.Linq;
 using System.Reactive.Disposables;
+using System.ComponentModel;
 
 namespace K4W2Rx.Extensions
 {
     public static class KinectSensorExtension
     {
         private static CompositeDisposable disposables = new CompositeDisposable();
-
+        /// <summary>
+        /// Create KinectSensor property changed stream from KinectSensor
+        /// </summary>
+        /// <param name="sensor">source of stream</param>
+        /// <returns>Observable KinectSensor property changes stream</returns>
+        public static IObservable<PropertyChangedEventArgs> AsObservable(this KinectSensor sensor)
+        {
+            return Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(
+                h => sensor.PropertyChanged += h,
+                h => sensor.PropertyChanged -= h
+                ).Select(e => e.EventArgs);
+        }
+        /// <summary>
+        /// Create KinectSensor availability stream from KinectSensor.
+        /// </summary>
+        /// <param name="sensor">source of stream</param>
+        /// <returns>Observable Kinect availability stream</returns>
+        public static IObservable<IsAvailableChangedEventArgs> AvailabilityAsObservable(this KinectSensor sensor)
+        {
+            return Observable.FromEventPattern<IsAvailableChangedEventArgs>(
+                h => sensor.IsAvailableChanged += h,
+                h => sensor.IsAvailableChanged -= h
+                ).Select(e => e.EventArgs);
+        }
         /// <summary>
         /// Create AudioSouce stream from KinectSensor
         /// </summary>
