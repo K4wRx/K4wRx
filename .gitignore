@@ -188,5 +188,6 @@ GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 
-# NuiDatabases
-K4W2Rx/NuiDatabase/**/*.*
+# Kinect libraries
+!K4W2Rx/vgbtechs/*.dll
+!K4W2Rx/Kinect*.Fusion.dll
