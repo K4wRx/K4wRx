@@ -86,7 +86,7 @@
     <Compile Include="Class1.cs" />
     <Compile Include="Extensions\AudioBeamFrameReaderExtension.cs" />
     <Compile Include="Extensions\BaseReaderExtension.cs" />
-    <Compile Include="Extensions\KinectSensorExtensions.cs" />
+    <Compile Include="Extensions\KinectSensorExtension.cs" />
     <Compile Include="Extensions\BodyFrameReaderExtension.cs" />
     <Compile Include="Extensions\BodyIndexFrameReaderExtension.cs" />
     <Compile Include="Extensions\ColorFrameReaderExtension.cs" />
