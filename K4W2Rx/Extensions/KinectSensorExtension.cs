@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Reactive.Linq;
 using System.Reactive.Disposables;
 using System.ComponentModel;
+using Microsoft.Kinect.VisualGestureBuilder;
 
 namespace K4W2Rx.Extensions
 {
@@ -124,6 +125,20 @@ namespace K4W2Rx.Extensions
         {
             var reader = sensor.OpenMultiSourceFrameReader(frameSouceTypes);
             disposables.Add(reader);
+            return reader.AsObservable();
+        }
+        /// <summary>
+        /// Create VisualGestureBuilder stream from KinectSensor
+        /// </summary>
+        /// <param name="sensor">source of stream</param>
+        /// <param name="gestures">gestures to detect</param>
+        /// <param name="frameSource">out frame source instance to set tracking id</param>
+        /// <returns>Observable VisualGestureBuidler frame stream</returns>
+        public static IObservable<VisualGestureBuilderFrameArrivedEventArgs> VisualGestureBuilderFrameAsObservable(this KinectSensor sensor, IEnumerable<Gesture> gestures, out VisualGestureBuilderFrameSource frameSource)
+        {
+            frameSource = new VisualGestureBuilderFrameSource(sensor, 0);
+            frameSource.AddGestures(gestures);
+            var reader = frameSource.OpenReader();
             return reader.AsObservable();
         }
         /// <summary>

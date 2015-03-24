@@ -94,6 +94,7 @@
     <Compile Include="Extensions\InfraredFrameReaderExtension.cs" />
     <Compile Include="Extensions\LongExposureInfraredFrameExtension.cs" />
     <Compile Include="Extensions\MultiSourceFrameExtension.cs" />
+    <Compile Include="Extensions\VisualGestureBuilderFrameReaderExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -16,6 +16,7 @@ It always creates new FrameReader instance.
 - Infrared
 - LongExposeInfrared
 - MultiSource
+- VisualGestureBuilder
 
 All Kinect streams are [here](https://msdn.microsoft.com/ja-jp/library/microsoft.kinect.aspx).
 
