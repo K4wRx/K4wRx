@@ -15,5 +15,23 @@ namespace K4W2Rx.Extensions
         {
             return BaseReaderExtension.AsObservable<BodyFrameArrivedEventArgs>(reader);
         }
+
+        public static IObservable<IEnumerable<Body>> BodyAsObservable(this BodyFrameReader reader)
+        {
+            return BaseReaderExtension.AsObservable<BodyFrameArrivedEventArgs>(reader).Select(e =>
+            {
+                List<Body> bodies = new List<Body>();
+                using (BodyFrame bodyFrame = e.FrameReference.AcquireFrame())
+                {
+                    bodyFrame.GetAndRefreshBodyData(bodies);
+                    return bodies;
+                }
+            });
+        }
+
+        public static IObservable<IEnumerable<Body>> TrackedBodyAsObservable(this BodyFrameReader reader)
+        {
+            return reader.BodyAsObservable().Select(e => e.Where(b => b.IsTracked).Select(b => b));
+        }
     }
 }
