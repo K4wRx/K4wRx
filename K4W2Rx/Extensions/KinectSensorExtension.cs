@@ -134,11 +134,12 @@ namespace K4W2Rx.Extensions
         /// <param name="gestures">gestures to detect</param>
         /// <param name="frameSource">out frame source instance to set tracking id</param>
         /// <returns>Observable VisualGestureBuidler frame stream</returns>
-        public static IObservable<VisualGestureBuilderFrameArrivedEventArgs> VisualGestureBuilderFrameAsObservable(this KinectSensor sensor, IEnumerable<Gesture> gestures, out VisualGestureBuilderFrameSource frameSource)
+        public static IObservable<VisualGestureBuilderFrameArrivedEventArgs> VisualGestureBuilderFrameAsObservable(this KinectSensor sensor, IEnumerable<Gesture> gestures)
         {
-            frameSource = new VisualGestureBuilderFrameSource(sensor, 0);
+            var frameSource = new VisualGestureBuilderFrameSource(sensor, 0);
             frameSource.AddGestures(gestures);
             var reader = frameSource.OpenReader();
+            disposables.Add(reader);
             return reader.AsObservable();
         }
         /// <summary>
