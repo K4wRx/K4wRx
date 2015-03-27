@@ -155,6 +155,45 @@ namespace K4W2Rx.Extensions
             return reader.TrackedBodyAsObservable();
         }
         /// <summary>
+        /// Create VisualGestureBuilder's DiscreteGestureResult stream for tracked bodies.
+        /// </summary>
+        /// <param name="sensor">source of stream</param>
+        /// <param name="databasePath">path to database</param>
+        /// <returns>Observable DiscreteGestureResult frame stream for tracked bodies.</returns>
+        public static IObservable<IDictionary<Gesture, DiscreteGestureResult>> TrackedBodyDiscreteGestureResultsAsObservable(this KinectSensor sensor, string databasePath)
+        {
+            var frameSource = new VisualGestureBuilderFrameSource(sensor, 0);
+            using (VisualGestureBuilderDatabase database = new VisualGestureBuilderDatabase(databasePath))
+            {
+                frameSource.AddGestures(database.AvailableGestures);
+            }
+            var reader = frameSource.OpenReader();
+            reader.IsPaused = false;
+            var frameStream = BaseReaderExtension.AsObservable<VisualGestureBuilderFrameArrivedEventArgs>(reader)
+                .Select(e => e.FrameReference.AcquireFrame())
+                .Where(frame => frame != null)
+                .Select(frame => frame);
+            
+            var trackingIdStream = sensor.BodyFrameSource.OpenReader().TrackedBodyAsObservable().Select(bodies => bodies.Where(b => b.IsTracked).Select(b => b.TrackingId));
+
+            // TODO: use list of frame source
+            return trackingIdStream.DistinctUntilChanged()
+                .CombineLatest(frameStream, (ids, frame) =>
+                {
+                    // TODO: check alignment of id and frame
+                    if (frame.TrackingId != ids.First())
+                    {
+                        // TODO: check weather is valid or invalid following disposal
+                        frame.VisualGestureBuilderFrameSource.TrackingId = ids.First();
+                    }
+                    Dictionary<Gesture, DiscreteGestureResult> dic = frame
+                        .DiscreteGestureResults.ToDictionary(kv => kv.Key, kv => kv.Value);
+                    frame.Dispose();
+
+                    return dic;
+                });
+        }
+        /// <summary>
         /// Dispose all readers which are listened by KinectSensorExtension.
         /// Once you call this method, you *CANNOT* open any reader with KinectSensorExtension
         /// </summary>
