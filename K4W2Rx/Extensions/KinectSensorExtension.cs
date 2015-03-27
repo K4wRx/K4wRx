@@ -142,6 +142,18 @@ namespace K4W2Rx.Extensions
             disposables.Add(reader);
             return reader.AsObservable();
         }
+        public static IObservable<IEnumerable<Body>> BodyAsObservable(this KinectSensor sensor)
+        {
+            var reader = sensor.BodyFrameSource.OpenReader();
+            disposables.Add(reader);
+            return reader.BodyAsObservable();
+        }
+        public static IObservable<IEnumerable<Body>> TrackedBodyAsObservable(this KinectSensor sensor)
+        {
+            var reader = sensor.BodyFrameSource.OpenReader();
+            disposables.Add(reader);
+            return reader.TrackedBodyAsObservable();
+        }
         /// <summary>
         /// Dispose all readers which are listened by KinectSensorExtension.
         /// Once you call this method, you *CANNOT* open any reader with KinectSensorExtension
