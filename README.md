@@ -15,11 +15,11 @@ It support FrameReader as Observable, Kinect sensor status as Observable and som
 
 ## APIs
 
-see [API docs](/k4wrx/Documents/README.md).
+see [API docs](/Documents/README.md).
 
 ## Install
 
-install from NuGet
+install from [NuGet Gallery](https://www.nuget.org/packages/K4wRx/).
 
 ```
 PM> Install-Package K4wRx
