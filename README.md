@@ -1,4 +1,4 @@
-# K4W2Rx
+# K4wRx
 
 Reactive extensions for Kinect for Windows v2 SDK.
 
@@ -15,14 +15,14 @@ It support FrameReader as Observable, Kinect sensor status as Observable and som
 
 ## APIs
 
-see [API docs](Documents/README.md).
+see [API docs](/k4wrx/Documents/README.md).
 
 ## Install
 
 install from NuGet
 
 ```
-PM> Install-Package K4w2Rx
+PM> Install-Package K4wRx
 ```
 
 ## License
