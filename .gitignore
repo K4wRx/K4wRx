@@ -189,5 +189,5 @@ _Pvt_Extensions/
 ModelManifest.xml
 
 # Kinect libraries
-!K4W2Rx/vgbtechs/*.dll
-!K4W2Rx/Kinect*.Fusion.dll
+!K4wRx/vgbtechs/*.dll
+!K4wRx/Kinect*.Fusion.dll

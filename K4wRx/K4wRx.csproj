@@ -7,8 +7,8 @@
     <ProjectGuid>{27B4BA99-8BA8-44E2-92A6-623334950E6B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>K4W2Rx</RootNamespace>
-    <AssemblyName>K4W2Rx</AssemblyName>
+    <RootNamespace>K4wRx</RootNamespace>
+    <AssemblyName>K4wRx</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>

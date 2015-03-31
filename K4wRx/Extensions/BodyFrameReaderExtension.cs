@@ -7,7 +7,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace K4W2Rx.Extensions
+namespace K4wRx.Extensions
 {
     public static class BodyFrameReaderExtension
     {

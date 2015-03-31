@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "K4W2Rx", "K4W2Rx\K4W2Rx.csproj", "{27B4BA99-8BA8-44E2-92A6-623334950E6B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "K4wRx", "K4wRx\K4wRx.csproj", "{27B4BA99-8BA8-44E2-92A6-623334950E6B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{BB1279D8-EFC0-428E-8CBE-0C7AB9B05194}"
 	ProjectSection(SolutionItems) = preProject

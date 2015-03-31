@@ -9,7 +9,7 @@ using System.Reactive.Disposables;
 using System.ComponentModel;
 using Microsoft.Kinect.VisualGestureBuilder;
 
-namespace K4W2Rx.Extensions
+namespace K4wRx.Extensions
 {
     public static class KinectSensorExtension
     {
