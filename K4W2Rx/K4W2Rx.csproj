@@ -83,7 +83,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Extensions\AudioBeamFrameReaderExtension.cs" />
     <Compile Include="Extensions\BaseReaderExtension.cs" />
     <Compile Include="Extensions\KinectSensorExtension.cs" />
