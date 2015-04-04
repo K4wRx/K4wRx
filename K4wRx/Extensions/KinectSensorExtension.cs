@@ -160,37 +160,61 @@ namespace K4wRx.Extensions
         /// <param name="sensor">source of stream</param>
         /// <param name="databasePath">path to database</param>
         /// <returns>Observable DiscreteGestureResult frame stream for tracked bodies.</returns>
-        public static IObservable<IDictionary<Gesture, DiscreteGestureResult>> TrackedBodyDiscreteGestureResultsAsObservable(this KinectSensor sensor, string databasePath)
+        public static IObservable<IEnumerable<IDictionary<Gesture, DiscreteGestureResult>>> TrackedBodyDiscreteGestureResultsAsObservable(this KinectSensor sensor, string databasePath)
         {
-            var frameSource = new VisualGestureBuilderFrameSource(sensor, 0);
-            using (VisualGestureBuilderDatabase database = new VisualGestureBuilderDatabase(databasePath))
+            var frameSouces = Enumerable.Range(1, sensor.BodyFrameSource.BodyCount).Select(_ =>
             {
-                frameSource.AddGestures(database.AvailableGestures);
-            }
-            var reader = frameSource.OpenReader();
-            reader.IsPaused = false;
-            var frameStream = BaseReaderExtension.AsObservable<VisualGestureBuilderFrameArrivedEventArgs>(reader)
-                .Select(e => e.FrameReference.AcquireFrame())
-                .Where(frame => frame != null)
-                .Select(frame => frame);
-            
+                var f = new VisualGestureBuilderFrameSource(sensor, 0);
+                using (VisualGestureBuilderDatabase db = new VisualGestureBuilderDatabase(databasePath))
+                {
+                    f.AddGestures(db.AvailableGestures.Where(g => g.GestureType == GestureType.Discrete));
+                }
+                return f;
+            });
+
+            var frameStreams = frameSouces.Select(f => f.OpenReader()).Select(r =>
+                {
+                    r.IsPaused = false;
+                    return BaseReaderExtension.AsObservable<VisualGestureBuilderFrameArrivedEventArgs>(r)
+                        .Select(e => e.FrameReference.AcquireFrame())
+                        .Where(frame => frame != null)
+                        .Select(frame => frame);
+                });
+
+            // maximum number of synchronized vgb frame event args will flow into this stream
+            var combinedStream = CombineStreams(frameStreams);
+            // tracking ids that are tracked now will flow into this stream
             var trackingIdStream = sensor.BodyFrameSource.OpenReader().TrackedBodyAsObservable().Select(bodies => bodies.Where(b => b.IsTracked).Select(b => b.TrackingId));
 
-            // TODO: use list of frame source
             return trackingIdStream.DistinctUntilChanged()
-                .CombineLatest(frameStream, (ids, frame) =>
+                .CombineLatest(combinedStream, (ids, frames) =>
                 {
-                    // TODO: check alignment of id and frame
-                    if (frame.TrackingId != ids.First())
-                    {
-                        // TODO: check weather is valid or invalid following disposal
-                        frame.VisualGestureBuilderFrameSource.TrackingId = ids.First();
-                    }
-                    Dictionary<Gesture, DiscreteGestureResult> dic = frame
-                        .DiscreteGestureResults.ToDictionary(kv => kv.Key, kv => kv.Value);
-                    frame.Dispose();
+                    var freeIds = ids.Where(id => {
+                        return !frames
+                            .Where(f => f.IsTrackingIdValid && f.TrackingId != 0)
+                            .Select(f => f.TrackingId).Contains(id);
+                    }).GetEnumerator();
 
-                    return dic;
+                    foreach (var f in frames.Where(f =>  f.TrackingId == 0 || !f.IsTrackingIdValid))
+                    {
+                        if (freeIds.MoveNext())
+                        {
+                            f.VisualGestureBuilderFrameSource.TrackingId = freeIds.Current;
+                        }
+                        else
+                        {
+                            f.VisualGestureBuilderFrameSource.TrackingId = 0;
+                        }
+                    }
+
+                    return frames.Select(frame =>
+                    {
+                        Dictionary<Gesture, DiscreteGestureResult> dic = frame
+                            .DiscreteGestureResults.ToDictionary(kv => kv.Key, kv => kv.Value);
+                        frame.Dispose();
+
+                        return dic;
+                    });
                 });
         }
         /// <summary>
@@ -210,6 +234,91 @@ namespace K4wRx.Extensions
         public static void ClearListeningReaders(this KinectSensor sensor)
         {
             disposables.Clear();
+        }
+
+        private static IObservable<IEnumerable<T>> CombineStreams<T>(IEnumerable<IObservable<T>> streams)
+        {
+            var s = streams.ToList();
+            switch (s.Count)
+            {
+                case 2:
+                    return s[0].CombineLatest(s[1], (s1, s2) =>
+                    {
+                        return new List<T> { s1, s2 };
+                    });
+                case 3:
+                    return s[0].CombineLatest(s[1], s[2], (s1, s2, s3) =>
+                    {
+                        return new List<T> { s1, s2, s3};
+                    });
+                case 4:
+                    return s[0].CombineLatest(s[1], s[2], s[3], (s1, s2, s3, s4) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4 };
+                    });
+                case 5:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], (s1, s2, s3, s4, s5) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5 };
+                    });
+                case 6:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], s[5], (s1, s2, s3, s4, s5, s6) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5, s6 };
+                    });
+                case 7:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], s[5], s[6], (s1, s2, s3, s4, s5, s6, s7) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5, s6, s7 };
+                    });
+                case 8:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], s[5], s[6], s[7], (s1, s2, s3, s4, s5, s6, s7, s8) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5, s6, s7, s8 };
+                    });
+                case 9:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], (s1, s2, s3, s4, s5, s6, s7, s8, s9) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5, s6, s7, s8, s9 };
+                    });
+                case 10:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], (s1, s2, s3, s4, s5, s6, s7, s8, s9, s10) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10 };
+                    });
+                case 11:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10], (s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11 };
+                    });
+                case 12:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10], s[11], (s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12 };
+                    });
+                case 13:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10], s[11], s[12], (s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13 };
+                    });
+                case 14:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10], s[11], s[12], s[13], (s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14 };
+                    });
+                case 15:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10], s[11], s[12], s[13], s[14], (s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15 };
+                    });
+                case 16:
+                    return s[0].CombineLatest(s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9], s[10], s[11], s[12], s[13], s[14], s[15], (s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16) =>
+                    {
+                        return new List<T> { s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16 };
+                    });
+                default:
+                    throw new ArgumentException("Length of argument should be between 2 to 16");
+            }
         }
     }
 }
