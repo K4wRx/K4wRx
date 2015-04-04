@@ -191,3 +191,4 @@ ModelManifest.xml
 # Kinect libraries
 !K4wRx/vgbtechs/*.dll
 !K4wRx/Kinect*.Fusion.dll
+*.nupkg
