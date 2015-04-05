@@ -27,7 +27,7 @@ PM> Install-Package K4wRx
 
 ## License
 
-[MIT](https://github.com/tcnksm/tool/blob/master/LICENCE)
+[the MIT license](/LICENCE)
 
 ## Author
 

@@ -5,10 +5,10 @@
     <version>0.1.0</version>
     <title>K4wRx</title>
     <authors>fumitoito</authors>
-    <licenseUrl>https://github.com/fumitoito/K4wRx/blob/master/README.md</licenseUrl>
+    <licenseUrl>https://github.com/fumitoito/K4wRx/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/fumitoito/K4wRx</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description> Reactive extensions for Kinect for Windows v2 SDK</description>
+    <description>Reactive extensions for Kinect for Windows v2 SDK</description>
     <releaseNotes>Initial release for beta.</releaseNotes>
     <copyright>Copyright 2015 fumitoito</copyright>
     <tags>Kinect Rx</tags>
