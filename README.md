@@ -1,5 +1,7 @@
 # K4wRx
 
+[![Build status](https://ci.appveyor.com/api/projects/status/nayrq1jb2mr2l7w8?svg=true)](https://ci.appveyor.com/project/fumitoito/k4wrx)
+
 Reactive extensions for Kinect for Windows v2 SDK.
 
 ## Description
