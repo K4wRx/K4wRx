@@ -15,7 +15,7 @@
     <dependencies>
       <dependency id="Microsoft.Kinect.Face.x64" version="2.0.1410.19000"></dependency>
       <dependency id="Microsoft.Kinect.Fusion.x64" version="2.0.1410.19000"></dependency>
-      <dependency id="Microsoft.Kinect.VisualGestureBuilder" version="2.0.1410.19000"></dependency>
+      <dependency id="Microsoft.Kinect.VisualGestureBuilder.x64" version="2.0.1410.19000"></dependency>
       <dependency id="Microsoft.Kinect" version="2.0.1410.19000"></dependency>
       <dependency id="Rx-Main" version="2.2.5"></dependency>
     </dependencies>
