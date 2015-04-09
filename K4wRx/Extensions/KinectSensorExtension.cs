@@ -224,6 +224,67 @@ namespace K4wRx.Extensions
             });
         }
         /// <summary>
+        /// Create VisualGestureBuilder's ContinuousGestureResult stream for tracked bodies.
+        /// </summary>
+        /// <param name="sensor">source of stream</param>
+        /// <param name="databasePath">path to database</param>
+        /// <returns>Observable ContinuousGestureResult frame stream for tracked bodies.</returns>
+
+        public static IObservable<IEnumerable<IDictionary<Gesture, ContinuousGestureResult>>> TrackedBodyContinuousGestureResultsAsObservable(this KinectSensor sensor, string databasePath)
+        {
+            var frameSouces = Enumerable.Range(1, sensor.BodyFrameSource.BodyCount).Select(_ =>
+            {
+                var f = new VisualGestureBuilderFrameSource(sensor, 0);
+                using (VisualGestureBuilderDatabase db = new VisualGestureBuilderDatabase(databasePath))
+                {
+                    f.AddGestures(db.AvailableGestures.Where(g => g.GestureType == GestureType.Continuous));
+                }
+                return f;
+            });
+
+            var frameStreams = frameSouces.Select(f => f.OpenReader()).Select(r =>
+            {
+                r.IsPaused = false;
+                return BaseReaderExtension.AsObservable<VisualGestureBuilderFrameArrivedEventArgs>(r)
+                    .Select(e => e.FrameReference.AcquireFrame())
+                    .Where(frame => frame != null)
+                    .Select(frame => frame);
+            });
+
+            // maximum number of synchronized vgb frame event args will flow into this stream
+            var zippedStreams = KinectSensorExtensionUtil.ZipStreams(frameStreams);
+            // tracking ids that are tracked now will flow into this stream
+            var trackingIdStream = sensor.BodyFrameSource.OpenReader().TrackedBodyAsObservable().Select(bodies => bodies.Select(b => b.TrackingId));
+
+            return zippedStreams.Zip(trackingIdStream, (frames, ids) =>
+            {
+                var i = ids.GetEnumerator();
+                foreach (var f in frames.Where(f => f.TrackingId == 0 || !f.IsTrackingIdValid))
+                {
+                    if (i.MoveNext())
+                    {
+                        f.VisualGestureBuilderFrameSource.TrackingId = i.Current;
+                    }
+                }
+
+                return frames.Select(frame =>
+                {
+                    if (frame.DiscreteGestureResults != null)
+                    {
+                        Dictionary<Gesture, ContinuousGestureResult> dic = frame
+                            .ContinuousGestureResults.ToDictionary(kv => kv.Key, kv => kv.Value);
+
+                        frame.Dispose();
+                        return dic;
+                    }
+                    else
+                    {
+                        return new Dictionary<Gesture, ContinuousGestureResult>();
+                    }
+                }).ToList();
+            });
+        }
+        /// <summary>
         /// Create notifier for CoordinateMapper. This stream notices that CoordinateMapper is activated. 
         /// </summary>
         /// <param name="sensor">source of stream</param>
