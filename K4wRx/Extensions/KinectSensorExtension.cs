@@ -138,6 +138,7 @@ namespace K4wRx.Extensions
             var frameSource = new VisualGestureBuilderFrameSource(sensor, 0);
             frameSource.AddGestures(gestures);
             var reader = frameSource.OpenReader();
+            reader.IsPaused = false;
             disposables.Add(reader);
             return reader.AsObservable();
         }
@@ -171,24 +172,18 @@ namespace K4wRx.Extensions
         /// <returns>Observable DiscreteGestureResult frame stream for tracked bodies.</returns>
         public static IObservable<IEnumerable<IDictionary<Gesture, DiscreteGestureResult>>> TrackedBodyDiscreteGestureResultsAsObservable(this KinectSensor sensor, string databasePath)
         {
-            var frameSouces = Enumerable.Range(1, sensor.BodyFrameSource.BodyCount).Select(_ =>
+            var frameStreams = Enumerable.Range(1, sensor.BodyFrameSource.BodyCount).Select(_ =>
             {
-                var f = new VisualGestureBuilderFrameSource(sensor, 0);
+                List<Gesture> gestures = null;
                 using (VisualGestureBuilderDatabase db = new VisualGestureBuilderDatabase(databasePath))
                 {
-                    f.AddGestures(db.AvailableGestures.Where(g => g.GestureType == GestureType.Discrete));
+                    gestures = db.AvailableGestures.Where(g => g.GestureType == GestureType.Discrete).ToList();
                 }
-                return f;
+                return sensor.VisualGestureBuilderFrameAsObservable(gestures)
+                    .Select(e => e.FrameReference.AcquireFrame())
+                    .Where(frame => frame != null)
+                    .Select(frame => frame);
             });
-
-            var frameStreams = frameSouces.Select(f => f.OpenReader()).Select(r =>
-                {
-                    r.IsPaused = false;
-                    return BaseReaderExtension.AsObservable<VisualGestureBuilderFrameArrivedEventArgs>(r)
-                        .Select(e => e.FrameReference.AcquireFrame())
-                        .Where(frame => frame != null)
-                        .Select(frame => frame);
-                });
 
             // maximum number of synchronized vgb frame event args will flow into this stream
             var zippedStreams = KinectSensorExtensionUtil.ZipStreams(frameStreams);
@@ -232,20 +227,14 @@ namespace K4wRx.Extensions
 
         public static IObservable<IEnumerable<IDictionary<Gesture, ContinuousGestureResult>>> TrackedBodyContinuousGestureResultsAsObservable(this KinectSensor sensor, string databasePath)
         {
-            var frameSouces = Enumerable.Range(1, sensor.BodyFrameSource.BodyCount).Select(_ =>
+            var frameStreams = Enumerable.Range(1, sensor.BodyFrameSource.BodyCount).Select(_ =>
             {
-                var f = new VisualGestureBuilderFrameSource(sensor, 0);
+                List<Gesture> gestures = null;
                 using (VisualGestureBuilderDatabase db = new VisualGestureBuilderDatabase(databasePath))
                 {
-                    f.AddGestures(db.AvailableGestures.Where(g => g.GestureType == GestureType.Continuous));
+                    gestures = db.AvailableGestures.Where(g => g.GestureType == GestureType.Continuous).ToList();
                 }
-                return f;
-            });
-
-            var frameStreams = frameSouces.Select(f => f.OpenReader()).Select(r =>
-            {
-                r.IsPaused = false;
-                return BaseReaderExtension.AsObservable<VisualGestureBuilderFrameArrivedEventArgs>(r)
+                return sensor.VisualGestureBuilderFrameAsObservable(gestures)
                     .Select(e => e.FrameReference.AcquireFrame())
                     .Where(frame => frame != null)
                     .Select(frame => frame);
@@ -269,7 +258,7 @@ namespace K4wRx.Extensions
 
                 return frames.Select(frame =>
                 {
-                    if (frame.DiscreteGestureResults != null)
+                    if (frame.ContinuousGestureResults != null)
                     {
                         Dictionary<Gesture, ContinuousGestureResult> dic = frame
                             .ContinuousGestureResults.ToDictionary(kv => kv.Key, kv => kv.Value);
