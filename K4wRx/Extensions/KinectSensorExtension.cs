@@ -224,6 +224,21 @@ namespace K4wRx.Extensions
             });
         }
         /// <summary>
+        /// Create notifier for CoordinateMapper. This stream notices that CoordinateMapper is activated. 
+        /// </summary>
+        /// <param name="sensor">source of stream</param>
+        /// <returns>Observable CoordinateMapper activation </returns>
+        public static IObservable<CoordinateMapper> CoordinateMapperAsObservable(this KinectSensor sensor)
+        {
+            var reader = sensor.DepthFrameSource.OpenReader();
+            // CoordinateMapper is enabled when first depth frame is arrived
+            return reader.AsObservable().Select(e =>
+            {
+                reader.Dispose();
+                return sensor.CoordinateMapper;
+            });
+        }
+        /// <summary>
         /// Dispose all readers which are listened by KinectSensorExtension.
         /// Once you call this method, you *CANNOT* open any reader with KinectSensorExtension
         /// </summary>
