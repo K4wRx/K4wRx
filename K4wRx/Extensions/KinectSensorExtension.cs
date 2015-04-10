@@ -192,7 +192,8 @@ namespace K4wRx.Extensions
 
             return zippedStreams.Zip(trackingIdStream, (frames, ids) =>
             {
-                var i = ids.GetEnumerator();
+                // find ids that is not contained in VGBFrames
+                var i = ids.Where(id => !frames.Where(f => f.TrackingId != 0 || f.IsTrackingIdValid).Select(f => f.TrackingId).Contains(id)).GetEnumerator();
                 foreach (var f in frames.Where(f => f.TrackingId == 0 || !f.IsTrackingIdValid))
                 {
                     if (i.MoveNext())
@@ -247,7 +248,8 @@ namespace K4wRx.Extensions
 
             return zippedStreams.Zip(trackingIdStream, (frames, ids) =>
             {
-                var i = ids.GetEnumerator();
+                // find ids that is not contained in VGBFrames
+                var i = ids.Where(id => !frames.Where(f => f.TrackingId != 0 || f.IsTrackingIdValid).Select(f => f.TrackingId).Contains(id)).GetEnumerator();
                 foreach (var f in frames.Where(f => f.TrackingId == 0 || !f.IsTrackingIdValid))
                 {
                     if (i.MoveNext())
