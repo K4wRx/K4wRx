@@ -59,22 +59,6 @@ TrackedBodyAsObservable().Subscribe(bodies -> bodies);
 
 
 
-### _TrackedBodyVGBFrameAsObservable()_
-
-##### Description
-
-This method provides some VGBFrame streams which are binding to tracked body's TrackingId.
-The number of VGBFrame stream depends on maximum number of body.
-
-##### Usage
-
-```cs
-TrackedBodyVGBFrameAsObservable().Subscribe((List<EventArgs>, List<Body>) -> ())
-
-```
-
-
-
 ### _TrackedBody*GestureResultAsObservable()_
 
 ##### Description

@@ -222,6 +222,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <Compile Include="Utils\KinectSensorExtensionUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Kinect20.Fusion.dll">
