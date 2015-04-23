@@ -27,6 +27,10 @@ install from [NuGet Gallery](https://www.nuget.org/packages/K4wRx/).
 PM> Install-Package K4wRx
 ```
 
+## Sample
+
+see and install [K4wRx.Sample](https://github.com/fumitoito/K4wRx.Sample)
+
 ## License
 
 [the MIT license](/LICENCE)
