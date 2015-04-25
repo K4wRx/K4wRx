@@ -17,7 +17,7 @@ It support FrameReader as Observable, Kinect sensor status as Observable and som
 
 ## APIs
 
-see [API docs](/Documents/README.md).
+see [API docs](https://github.com/K4wRx/K4wRx/wiki/API-Docs).
 
 ## Install
 
