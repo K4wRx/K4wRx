@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace K4wRx.Extensions
 {
-    static class BaseReaderExtension
+    public static class BaseReaderExtension
     {
         public static IObservable<T> AsObservable<T>(object target)
         {

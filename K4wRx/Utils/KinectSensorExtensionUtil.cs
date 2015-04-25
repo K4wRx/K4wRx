@@ -6,7 +6,7 @@ using System.Reactive.Linq;
 
 namespace K4wRx.Utils
 {
-    internal static class KinectSensorExtensionUtil
+    public static class KinectSensorExtensionUtil
     {
         /// <summary>
         /// Zip up streams into one stream
