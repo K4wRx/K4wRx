@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\AudioBeamFrameReaderExtension.cs" />
+    <Compile Include="Extensions\BaseFilterExtension.cs" />
     <Compile Include="Extensions\BaseReaderExtension.cs" />
     <Compile Include="Extensions\KinectSensorExtension.cs" />
     <Compile Include="Extensions\BodyFrameReaderExtension.cs" />
