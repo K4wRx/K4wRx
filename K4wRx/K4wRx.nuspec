@@ -7,6 +7,7 @@
     <authors>fumitoito</authors>
     <licenseUrl>https://github.com/K4wRx/K4wRx/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/K4wRx/K4wRx</projectUrl>
+    <iconUrl>https://cloud.githubusercontent.com/assets/770377/7360784/08a854ba-ed8a-11e4-9a18-f3ebe9455ebf.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Reactive extensions for Kinect for Windows v2 SDK</description>
     <releaseNotes>Initial release for beta.</releaseNotes>
